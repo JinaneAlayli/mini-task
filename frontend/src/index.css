@@ -1,0 +1,153 @@
+/* frontend/src/index.css */
+
+/* Global */
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f5f7fa; /* soft light */
+  color: #1f2937;
+}
+
+/* Layout */
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+/* Card */
+.card {
+  width: 100%;
+  max-width: 640px;
+  background: #ffffff;
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+}
+
+/* Typography */
+.title {
+  font-size: 1.9rem;
+  font-weight: 700;
+  margin: 0 0 0.4rem;
+  color: #1f2937;
+}
+
+.subtitle {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.muted {
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+/* Alert */
+.alert {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.6rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.85rem;
+  border: 1px solid #fecaca;
+}
+
+/* Form */
+.form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.input {
+  flex: 1;
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.6rem;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #1f2937;
+}
+
+.input:focus {
+  border-color: #6366f1;
+}
+
+/* Buttons */
+.btn-primary {
+  padding: 0.55rem 1rem;
+  border-radius: 0.6rem;
+  border: none;
+  cursor: pointer;
+  background: #6366f1; /* purple */
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.btn-primary:disabled {
+  background: #9ca3af;
+  cursor: default;
+}
+
+.toolbar {
+  margin-bottom: 0.75rem;
+}
+
+.btn-outline {
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+/* Task list */
+.task-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.6rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+
+.task-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.task-title {
+  font-size: 0.95rem;
+  color: #1f2937;
+}
+
+.task-title.done {
+  text-decoration: line-through;
+  color: #9ca3af;
+}
+
+.btn-delete {
+  border: none;
+  background: transparent;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
