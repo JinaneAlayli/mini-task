@@ -1,35 +1,21 @@
-// backend/routes/taskRoutes.js
 const express = require('express');
 const Task = require('../models/Task');
 
 const router = express.Router();
 
 /**
- * Helper: validate that sessionId exists
+ * GET /api/tasks?sessionId=xxx
+ * → رجّع كل الـ tasks لهال sessionId
  */
-function requireSessionId(req, res) {
-  const fromQuery = req.query.sessionId;
-  const fromBody = req.body.sessionId;
-
-  const sessionId = fromQuery || fromBody;
-
-  if (!sessionId) {
-    res.status(400).json({ message: 'sessionId is required' });
-    return null;
-  }
-
-  return sessionId;
-}
-
-// GET /api/tasks?sessionId=xxx  → get tasks for this session
 router.get('/', async (req, res) => {
   try {
-    const sessionId = requireSessionId(req, res);
-    if (!sessionId) return;
+    const { sessionId } = req.query;
 
-    const tasks = await Task.find({ sessionId })
-      .sort({ createdAt: -1 });
+    if (!sessionId) {
+      return res.status(400).json({ message: 'sessionId is required' });
+    }
 
+    const tasks = await Task.find({ sessionId }).sort({ createdAt: -1 });
     res.json(tasks);
   } catch (err) {
     console.error('Error fetching tasks:', err);
@@ -37,19 +23,26 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST /api/tasks  { title, sessionId } → create new task for this session
+/**
+ * POST /api/tasks
+ * body: { title, sessionId }
+ */
 router.post('/', async (req, res) => {
   try {
-    const sessionId = requireSessionId(req, res);
-    if (!sessionId) return;
+    const { title, sessionId } = req.body;
 
-    const { title } = req.body;
+    if (!sessionId) {
+      return res.status(400).json({ message: 'sessionId is required' });
+    }
 
     if (!title || !title.trim()) {
       return res.status(400).json({ message: 'Title is required' });
     }
 
-    const newTask = await Task.create({ title: title.trim(), sessionId });
+    const newTask = await Task.create({
+      title: title.trim(),
+      sessionId,
+    });
 
     res.status(201).json(newTask);
   } catch (err) {
@@ -58,11 +51,16 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PATCH /api/tasks/:id/toggle  { sessionId } → toggle done (only if belongs to this session)
+/**
+ * PATCH /api/tasks/:id/toggle?sessionId=xxx
+ */
 router.patch('/:id/toggle', async (req, res) => {
   try {
-    const sessionId = requireSessionId(req, res);
-    if (!sessionId) return;
+    const { sessionId } = req.query;
+
+    if (!sessionId) {
+      return res.status(400).json({ message: 'sessionId is required' });
+    }
 
     const task = await Task.findOne({
       _id: req.params.id,
@@ -83,11 +81,16 @@ router.patch('/:id/toggle', async (req, res) => {
   }
 });
 
-// DELETE /api/tasks/:id  { sessionId } → delete only if belongs to this session
+/**
+ * DELETE /api/tasks/:id?sessionId=xxx
+ */
 router.delete('/:id', async (req, res) => {
   try {
-    const sessionId = requireSessionId(req, res);
-    if (!sessionId) return;
+    const { sessionId } = req.query;
+
+    if (!sessionId) {
+      return res.status(400).json({ message: 'sessionId is required' });
+    }
 
     const deleted = await Task.findOneAndDelete({
       _id: req.params.id,

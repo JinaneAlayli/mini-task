@@ -1,9 +1,8 @@
-// frontend/src/App.jsx
 import { useEffect, useState } from 'react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
-// Helper: get or create a sessionId in localStorage
+// get or create a stable sessionId in localStorage
 function getSessionId() {
   try {
     let existing = localStorage.getItem('sessionId');
@@ -17,20 +16,18 @@ function getSessionId() {
     localStorage.setItem('sessionId', newId);
     return newId;
   } catch {
-    // if localStorage not available for any reason
     return `session_${Date.now()}_${Math.random().toString(16).slice(2)}`;
   }
 }
 
 function App() {
-  const [sessionId] = useState(getSessionId); //  fixed, one per browser
+  const [sessionId] = useState(getSessionId);
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState('');
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
 
-  // Fetch tasks from backend
   const fetchTasks = async () => {
     try {
       setLoading(true);
@@ -51,13 +48,11 @@ function App() {
     }
   };
 
-  // Load tasks on first render
   useEffect(() => {
     fetchTasks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionId]); // if ever changes (ma bteghayar bas just in case)
+  }, [sessionId]);
 
-  // Create new task
   const handleAddTask = async (e) => {
     e.preventDefault();
     if (!title.trim()) return;
@@ -69,7 +64,7 @@ function App() {
       const res = await fetch(`${API_URL}/tasks`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, sessionId }), // send sessionId
+        body: JSON.stringify({ title, sessionId }),
       });
 
       if (!res.ok) {
@@ -87,12 +82,12 @@ function App() {
     }
   };
 
-  // Toggle done
   const handleToggle = async (id) => {
     try {
       setError('');
+
       const res = await fetch(
-        `${API_URL}/tasks/${id}/toggle?sessionId=${sessionId}`, //  query
+        `${API_URL}/tasks/${id}/toggle?sessionId=${sessionId}`,
         {
           method: 'PATCH',
         }
@@ -112,14 +107,14 @@ function App() {
     }
   };
 
-  // Delete task
   const handleDelete = async (id) => {
     if (!confirm('Delete this task?')) return;
 
     try {
       setError('');
+
       const res = await fetch(
-        `${API_URL}/tasks/${id}?sessionId=${sessionId}`, //  query
+        `${API_URL}/tasks/${id}?sessionId=${sessionId}`,
         {
           method: 'DELETE',
         }
@@ -128,6 +123,7 @@ function App() {
       if (!res.ok) {
         throw new Error('Failed to delete task');
       }
+
       setTasks((prev) => prev.filter((t) => t._id !== id));
     } catch (err) {
       console.error(err);
@@ -160,7 +156,6 @@ function App() {
           border: '1px solid #e5e7eb',
         }}
       >
-        {/* Header */}
         <header
           style={{
             display: 'flex',
@@ -221,7 +216,6 @@ function App() {
           </div>
         </header>
 
-        {/* Error */}
         {error && (
           <div
             style={{
@@ -231,14 +225,13 @@ function App() {
               borderRadius: '8px',
               marginBottom: '0.9rem',
               fontSize: '0.85rem',
-              border: '1px solid #fecaca ' ,
+              border: '1px solid #fecaca',
             }}
           >
             {error}
           </div>
         )}
 
-        {/* Add form */}
         <form
           onSubmit={handleAddTask}
           style={{
@@ -286,14 +279,12 @@ function App() {
           </button>
         </form>
 
-        {/* Loading */}
         {loading && (
           <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>
             Loading tasks...
           </p>
         )}
 
-        {/* Empty state */}
         {!loading && tasks.length === 0 && (
           <div
             style={{
@@ -309,7 +300,6 @@ function App() {
           </div>
         )}
 
-        {/* Task list */}
         <ul
           style={{
             listStyle: 'none',

@@ -1,9 +1,9 @@
-// backend/models/Task.js
 const mongoose = require('mongoose');
 
 const taskSchema = new mongoose.Schema(
   {
-     sessionId: {
+    // each browser/device will have its own sessionId
+    sessionId: {
       type: String,
       required: true,
       index: true,
