@@ -17,7 +17,7 @@ app.use('/api/tasks', taskRoutes);
 
 // Health check
 app.get('/', (req, res) => {
-  res.send('Mini Tasks API is running ');
+  res.send('Mini Tasks API is running');
 });
 
 // MongoDB connection

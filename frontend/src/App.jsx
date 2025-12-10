@@ -3,8 +3,27 @@ import { useEffect, useState } from 'react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
+// Helper: get or create a sessionId in localStorage
+function getSessionId() {
+  try {
+    let existing = localStorage.getItem('sessionId');
+    if (existing) return existing;
+
+    const newId =
+      typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `session_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+
+    localStorage.setItem('sessionId', newId);
+    return newId;
+  } catch {
+    // if localStorage not available for any reason
+    return `session_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+  }
+}
 
 function App() {
+  const [sessionId] = useState(getSessionId); //  fixed, one per browser
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState('');
   const [loading, setLoading] = useState(false);
@@ -16,10 +35,12 @@ function App() {
     try {
       setLoading(true);
       setError('');
-      const res = await fetch(`${API_URL}/tasks`);
+
+      const res = await fetch(`${API_URL}/tasks?sessionId=${sessionId}`);
       if (!res.ok) {
         throw new Error('Failed to fetch tasks');
       }
+
       const data = await res.json();
       setTasks(data);
     } catch (err) {
@@ -33,7 +54,8 @@ function App() {
   // Load tasks on first render
   useEffect(() => {
     fetchTasks();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId]); // if ever changes (ma bteghayar bas just in case)
 
   // Create new task
   const handleAddTask = async (e) => {
@@ -43,10 +65,11 @@ function App() {
     try {
       setCreating(true);
       setError('');
+
       const res = await fetch(`${API_URL}/tasks`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title }),
+        body: JSON.stringify({ title, sessionId }), // send sessionId
       });
 
       if (!res.ok) {
@@ -68,12 +91,17 @@ function App() {
   const handleToggle = async (id) => {
     try {
       setError('');
-      const res = await fetch(`${API_URL}/tasks/${id}/toggle`, {
-        method: 'PATCH',
-      });
+      const res = await fetch(
+        `${API_URL}/tasks/${id}/toggle?sessionId=${sessionId}`, //  query
+        {
+          method: 'PATCH',
+        }
+      );
+
       if (!res.ok) {
         throw new Error('Failed to toggle task');
       }
+
       const updated = await res.json();
       setTasks((prev) =>
         prev.map((t) => (t._id === updated._id ? updated : t))
@@ -90,9 +118,13 @@ function App() {
 
     try {
       setError('');
-      const res = await fetch(`${API_URL}/tasks/${id}`, {
-        method: 'DELETE',
-      });
+      const res = await fetch(
+        `${API_URL}/tasks/${id}?sessionId=${sessionId}`, //  query
+        {
+          method: 'DELETE',
+        }
+      );
+
       if (!res.ok) {
         throw new Error('Failed to delete task');
       }
@@ -199,7 +231,7 @@ function App() {
               borderRadius: '8px',
               marginBottom: '0.9rem',
               fontSize: '0.85rem',
-              border: '1px solid #fecaca',
+              border: '1px solid #fecaca ' ,
             }}
           >
             {error}
@@ -256,7 +288,9 @@ function App() {
 
         {/* Loading */}
         {loading && (
-          <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>Loading tasks...</p>
+          <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>
+            Loading tasks...
+          </p>
         )}
 
         {/* Empty state */}
