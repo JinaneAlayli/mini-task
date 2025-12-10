@@ -1,7 +1,8 @@
 // frontend/src/App.jsx
 import { useEffect, useState } from 'react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -15,7 +16,7 @@ function App() {
     try {
       setLoading(true);
       setError('');
-      const res = await fetch(`${API_URL}/api/tasks`);
+      const res = await fetch(`${API_URL}/tasks`);
       if (!res.ok) {
         throw new Error('Failed to fetch tasks');
       }
@@ -42,7 +43,7 @@ function App() {
     try {
       setCreating(true);
       setError('');
-      const res = await fetch(`${API_URL}/api/tasks`, {
+      const res = await fetch(`${API_URL}/tasks`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title }),
@@ -67,7 +68,7 @@ function App() {
   const handleToggle = async (id) => {
     try {
       setError('');
-      const res = await fetch(`${API_URL}/api/tasks/${id}/toggle`, {
+      const res = await fetch(`${API_URL}/tasks/${id}/toggle`, {
         method: 'PATCH',
       });
       if (!res.ok) {
@@ -89,7 +90,7 @@ function App() {
 
     try {
       setError('');
-      const res = await fetch(`${API_URL}/api/tasks/${id}`, {
+      const res = await fetch(`${API_URL}/tasks/${id}`, {
         method: 'DELETE',
       });
       if (!res.ok) {
